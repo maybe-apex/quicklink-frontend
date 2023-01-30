@@ -1,5 +1,6 @@
 import {initializeApp} from "firebase/app";
 import {getAuth, GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
+import {ErrorMessage} from "@/global/constants";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAGOdFT4ugf2XYCbnVb798BSHWGSvaO_YA",
@@ -14,11 +15,14 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
 const provider = new GoogleAuthProvider()
 
-const signInWithGoogle = () => {
-    signInWithPopup(auth, provider).then(((result) => {
-        console.log(result)
+export const signInWithGoogle = async (): Promise<string | null> => {
+    let _email: string | null = null
+    await signInWithPopup(auth, provider).then(((result) => {
+        _email = result.user.email
+        if (_email == null)
+            throw Error(ErrorMessage.GoogleAuthCompromised)
     })).catch((error) => {
-        console.log(error)
+        throw error
     });
-
+    return _email
 }

@@ -1,6 +1,6 @@
 import {Avatar, AvatarGroup} from "@chakra-ui/react";
 import React from "react";
-import {kFontBold} from "@/globals/constants";
+import {kFontBold} from "@/global/constants";
 
 export default function AvatarGroupBuilder(): JSX.Element {
     return (

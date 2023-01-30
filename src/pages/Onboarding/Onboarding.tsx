@@ -5,9 +5,9 @@ import {
     heroTitle,
     kFontBold,
     kFontSemiBold,
-} from "@/globals/constants";
+} from "@/global/constants";
 import AvatarGroupBuilder from "@/pages/Onboarding/components/AvatarGroupBuilder";
-import {logo} from "@/globals/helpers";
+import {logo} from "@/global/helpers";
 import CardBuilder from "./components/CardBuilder";
 
 function Onboarding() {
