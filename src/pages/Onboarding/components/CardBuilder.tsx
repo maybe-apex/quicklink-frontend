@@ -1,4 +1,4 @@
-import {ErrorMessage, kFontBold, kFontMedium} from "@/global/constants";
+import {ErrorMessage, kFontBold, kFontMedium, kFontNormal} from "@/global/constants";
 import {avatar_female_1, avatar_male_1} from "@/global/helpers";
 import {ArrowForwardIcon} from "@chakra-ui/icons";
 import {
@@ -18,6 +18,7 @@ import {Gender} from "@/models/user"
 import {signInWithGoogle} from "@/controllers/Firebase"
 import {Authenticate, CreatUser} from "@/controllers/requests";
 import {tiltHelper} from "@/pages/Onboarding/helpers";
+import {Router, useRouter} from "next/router";
 
 export default function CardBuilder(): JSX.Element {
     const [firstName, setFirstName] = useState("");
@@ -28,7 +29,10 @@ export default function CardBuilder(): JSX.Element {
 
     const handleFirstNameChange = (e: any) => setFirstName(e.target.value);
     const handleLastNameChange = (e: any) => setLastName(e.target.value);
-    const handleGenderChange = (_newGender: Gender) => setGender(_newGender);
+    const handleGenderChange = (_newGender: Gender) => {
+        console.log(_newGender)
+        setGender(_newGender)
+    };
 
     const isFirstNameEmpty = firstName === "";
     const isLastNameEmpty = lastName === "";
@@ -77,7 +81,7 @@ export default function CardBuilder(): JSX.Element {
                 <div className={"flex flex-row mt-8 justify-center"}>
                     <div
                         className={
-                            `flex justify-center border-2 rounded-xl mx-4 p-4 duration-200 ${gender == Gender.Male ? "" : "border-slate-600"}`
+                            `flex justify-center border-2 border-slate-200 rounded-xl mx-4 p-4 duration-200 ${gender == Gender.Male ? "" : "border-slate-500"}`
                         }
                         onClick={() => handleGenderChange(Gender.Male)}
                     >
@@ -88,7 +92,7 @@ export default function CardBuilder(): JSX.Element {
                     </div>
                     <div
                         className={
-                            `flex justify-center border-2 rounded-xl mx-4 p-4 duration-200 ${gender == Gender.Female ? "" : "border-slate-600"}`
+                            `flex justify-center border-2 border-slate-200 rounded-xl mx-4 p-4 duration-200 ${gender == Gender.Female ? "" : "border-slate-500"}`
                         }
                         onClick={() => handleGenderChange(Gender.Female)}
                     >
@@ -104,12 +108,11 @@ export default function CardBuilder(): JSX.Element {
                     </FormLabel>
                     <FormControl isInvalid={isSubmitted && (isDateEmpty)}>
                         <div className="flex justify-center">
-                            <div className={"text-slate-400 w-60 !-center"}>
+                            <div className={`${kFontNormal.className}text-slate-200  w-60`}>
                                 <SingleDatepicker
                                     name="date-input"
                                     date={date}
                                     onDateChange={setDate}
-
                                 />
                                 <FormErrorMessage>
                                     Please enter your birthday.
@@ -231,11 +234,23 @@ const GetSignUpButton = (params: SignUpParams): JSX.Element => {
 }
 
 const GetLoginButton = (): JSX.Element => {
+    const router = useRouter();
     const [isLoading, setLoading] = useState(false)
     const [isLoginAttempted, setLoginAttempted] = useState(false)
     const handleLogin = async () => {
         await setLoading(true)
-        let _email: string | null = await signInWithGoogle()
+        let _email: string | null
+        try {
+            _email = await signInWithGoogle()
+        } catch (e) {
+            console.log(e)
+            // happens when use closes google singin popup without selection anything
+            // DONE: display error message to user
+            // await setErrorMessage(ErrorMessage.GoogleAuthCompromised)
+            // await setError(true)
+            await setLoading(false)
+            return
+        }
         if (_email == null) {
             console.log("sign-in with google failed")
             await setLoading(false)
@@ -245,6 +260,8 @@ const GetLoginButton = (): JSX.Element => {
             let userExists = await Authenticate(_email!)
             if (userExists) {
                 // user exists, redirect to app
+                console.log('test123')
+                await router.push('/landing')
                 await setLoading(false)
                 return
             }
@@ -257,7 +274,7 @@ const GetLoginButton = (): JSX.Element => {
         await setLoading(false)
         await setLoginAttempted(true)
     }
-
+    // return <ColorModeSwitcher/>
     if (isLoading)
         return (<Button
             isLoading
@@ -275,14 +292,14 @@ const GetLoginButton = (): JSX.Element => {
             </div>)
     return (<Button
         rightIcon={
-            <ArrowForwardIcon className="bg-slate-600"/>
+            <ArrowForwardIcon className={"bg-slate-600"} color={"white"}/>
         }
         colorScheme="gray"
-        variant="solid"
+        variant="login"
         className="rounded-sm ml-20"
         onClick={() => handleLogin()}
     >
-        <p className="text-slate-600">Log in</p>
+        <p className="text-gray-800">Log in</p>
     </Button>)
 }
 
