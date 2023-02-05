@@ -1,11 +1,11 @@
+import {CreateUserParams} from "@/controllers/requests";
 import {Gender} from "@/models/user"
 
 
 import logo from "/public/quicklink_logo.svg";
 import avatar_male_1 from "/src/assets/avatars/avatar-male-1.svg";
 import avatar_female_1 from "/src/assets/avatars/avatar-female-1.svg";
-import {CreateUserParams} from "@/controllers/requests";
-
+import searchLogo from "/src/assets/icons/search.svg"
 
 export class Utils {
     public static genderFromString(val: string | null): Gender | null {
@@ -33,5 +33,5 @@ export class Utils {
         }))
 }
 
-export {logo, avatar_male_1, avatar_female_1};
+export {logo, avatar_male_1, avatar_female_1, searchLogo};
 
