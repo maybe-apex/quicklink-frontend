@@ -38,18 +38,26 @@ export function ResultWrapper({
 					</tr>
 				</thead>
 				{isLoading && (
-					<div className="f1ex flex-col gap-5 my-6">
-						<Skeleton height="50px" w={"730px"} />
-						<Skeleton height="50px" w={"730px"} />
-						<Skeleton height="50px" w={"730px"} />
-						<Skeleton height="50px" w={"730px"} />
-						<Skeleton height="50px" w={"730px"} />
-						<Skeleton height="50px" w={"730px"} />
+					<div className="f1ex flex-col my-6">
+						{(() => {
+							const elements = [];
+							for (let i = 1; i <= 5; i++) {
+								elements.push(
+									<Skeleton
+										key={i}
+										height="60px"
+										w={"730px"}
+										my={"7"}
+									/>
+								);
+							}
+							return elements;
+						})()}
 					</div>
 				)}
 				{!isLoading && (
 					<tbody>
-						{filteredUsers.map((x: User, i: number) => (
+						{filteredUsers?.map((x: User, i: number) => (
 							<Result key={`${i}${x.email}${x.gender}`} x={x} />
 						))}
 					</tbody>
@@ -80,15 +88,15 @@ function Result({ x }: { x: User }): JSX.Element {
 						className={`${kFontMedium.className} text-md`}
 					>{`${x.firstName} ${x.lastName}`}</p>
 					<p
-						className={`${kFontNormal.className} text-sm text-gray-400`}
+						className={`${kFontNormal.className} text-sm text-gray-400 texs-ellipsis overflow-hidden`}
 					>{`${x.email}`}</p>
 				</div>
 			</td>
 			<td className="w-72">
 				<Wrap>
-					{x.tags.map((e, i) => {
+					{x.tags?.map((e, i) => {
 						return (
-							<WrapItem key={`${i} ${e.label}`}>
+							<WrapItem key={`${i} ${e.title}`}>
 								<Tooltip
 									placement="top"
 									label={
@@ -106,7 +114,7 @@ function Result({ x }: { x: User }): JSX.Element {
 												: "red"
 										}
 									>
-										<TagLabel>{e.label}</TagLabel>
+										<TagLabel>{e.title}</TagLabel>
 									</Tag>
 								</Tooltip>
 							</WrapItem>

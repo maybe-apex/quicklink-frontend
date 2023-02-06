@@ -2,6 +2,7 @@ import { Utils } from "@/global/helpers";
 import { ErrorMessage } from "@/global/constants";
 
 export class User {
+	public id: string;
 	public firstName: string;
 	public lastName: string;
 	public gender: Gender;
@@ -12,15 +13,23 @@ export class User {
 	public tags: Tag[];
 
 	constructor({
+		id,
 		firstName,
 		lastName,
 		gender,
 		dob,
 		closeFriends,
 		friends,
-		tags = [new Tag({ label: "BITS-G", type: TagType.Formal })],
+		tags = [
+			new Tag({
+				title: "BITS-G",
+				type: TagType.Formal,
+				id: "",
+			}),
+		],
 		email,
 	}: UserParams) {
+		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.gender = gender;
@@ -35,9 +44,10 @@ export class User {
 		let _gender: Gender | null;
 		_gender = Utils.genderFromString(user.gender as string) as Gender;
 		if (_gender == null) {
-			throw Error(ErrorMessage.ParsingError);
+			throw Error(`${ErrorMessage.ParsingError} for ${user.gender}`);
 		}
 		return new User({
+			id: user["_id"],
 			firstName: user.firstName,
 			lastName: user.lastName,
 			gender: _gender,
@@ -51,6 +61,7 @@ export class User {
 }
 
 interface UserParams {
+	id: string;
 	firstName: string;
 	lastName: string;
 	gender: Gender;
@@ -67,17 +78,20 @@ export enum Gender {
 }
 
 export class Tag {
-	public label: string;
+	public id: string;
+	public title: string;
 	public type: TagType;
 
-	constructor({ label, type }: TagParams) {
-		this.label = label;
+	constructor({ title, type, id }: TagParams) {
+		this.id = id;
+		this.title = title;
 		this.type = type;
 	}
 }
 
 interface TagParams {
-	label: string;
+	id: string;
+	title: string;
 	type: TagType;
 }
 

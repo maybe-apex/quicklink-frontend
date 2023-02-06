@@ -1,6 +1,7 @@
-import { userDB } from "@/global/constants";
+import { Database } from "@/Database/AppData";
 import { TagType } from "@/models/user";
 
+const userDB = Database.allUsers;
 export const buildOptions = (): {
 	label: string;
 	options: { colorScheme: string; label: string; value: string }[];
@@ -22,7 +23,7 @@ export const buildOptions = (): {
 	let formalTags = new Set<string>();
 	let informalTags = new Set<string>();
 	userDB.forEach(({ tags }) => {
-		tags.forEach(({ type, label }) => {
+		tags?.forEach(({ type, title: label }) => {
 			if (type == TagType.Formal) {
 				formalTags.add(label);
 			} else {

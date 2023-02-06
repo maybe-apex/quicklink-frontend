@@ -5,11 +5,12 @@ import {
 	Route,
 	StorageKeys,
 } from "@/global/constants";
-import { Gender, User } from "@/models/user";
+import { Gender, Tag, User } from "@/models/user";
 import { Utils } from "@/global/helpers";
 import { saveToLocalStorage } from "./LocalStorage";
+import { Database } from "@/Database/AppData";
 
-const domain = Domains.Localhost;
+const domain = Domains.Aryan;
 
 export const Authenticate = async (
 	email: string
@@ -88,20 +89,19 @@ export const CreatUser = async (params: CreateUserParams): Promise<boolean> => {
 	return true;
 };
 
-
-export const GetAllTags = async (): Promise<boolean> => {
-	console.log(`${Route.GetAllTags} called`)
+export const GetAllTags = async (): Promise<Map<string, Tag>> => {
+	console.log(`${Route.GetAllTags} called`);
 	let response: Response;
 
 	try {
-		response = await fetch(`http://${domain}:4000/${Route.GetAllTags}`,{
+		response = await fetch(`http://${domain}:4000/${Route.GetAllTags}`, {
 			method: Methods.GET,
 		});
-	} catch(e){
+	} catch (e) {
 		throw new Error(ErrorMessage.TimeOut);
 	}
 	console.log(`getalltags response= ${response}`);
- //TODO: check error codes in backend
+	//TODO: check error codes in backend
 	if ([500, 502].includes(response.status)) {
 		throw new Error(ErrorMessage.ServerError);
 	}
@@ -110,24 +110,23 @@ export const GetAllTags = async (): Promise<boolean> => {
 	}
 	const raw = await response.json();
 
-	console.log(raw);
+	Database.populateAllTags(raw.object);
 
-	return true;
-}
+	return Database.allTags;
+};
 
-export const GetAllUsers = async (): Promise<boolean> => {
-	console.log(`${Route.GetAllUsers} called`)
+export const GetAllUsers = async (): Promise<Map<string, User>> => {
+	console.log(`${Route.GetAllUsers} called`);
 	let response: Response;
 
 	try {
-		response = await fetch(`http://${domain}:4000/${Route.GetAllUsers}`,{
+		response = await fetch(`http://${domain}:4000/${Route.GetAllUsers}`, {
 			method: Methods.GET,
 		});
-	} catch(e){
+	} catch (e) {
 		throw new Error(ErrorMessage.TimeOut);
 	}
-	console.log(`getallusers response= ${response}`);
- //TODO: check error codes in backend
+	//TODO: check error codes in backend
 	if ([500, 502].includes(response.status)) {
 		throw new Error(ErrorMessage.ServerError);
 	}
@@ -136,14 +135,13 @@ export const GetAllUsers = async (): Promise<boolean> => {
 	}
 	const raw = await response.json();
 
-	console.log(raw);
+	Database.populateAllUsers(raw.object);
 
-	return true;
-}
+	return Database.allUsers;
+};
 
 export const GetUserProfile = async (): Promise<boolean> => {
-	console.log(`${Route.GetAllUsers} called`)
+	console.log(`${Route.GetAllUsers} called`);
 	let response: Response;
 	return true;
-}
-
+};
