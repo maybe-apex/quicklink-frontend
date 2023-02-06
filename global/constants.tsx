@@ -8,6 +8,9 @@ export enum Domains {
 export enum Route {
 	Authenticate = "authenticate",
 	CreateUser = "createUser",
+	GetAllTags = "getAllTags",
+	GetAllUsers ="getAllUsers",
+	GetUserProfile = "profile",
 }
 
 export enum Methods {

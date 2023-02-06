@@ -9,7 +9,7 @@ import { Gender, User } from "@/models/user";
 import { Utils } from "@/global/helpers";
 import { saveToLocalStorage } from "./LocalStorage";
 
-const domain = Domains.Kunal;
+const domain = Domains.Localhost;
 
 export const Authenticate = async (
 	email: string
@@ -87,3 +87,63 @@ export const CreatUser = async (params: CreateUserParams): Promise<boolean> => {
 	saveToLocalStorage(StorageKeys.Hero, user);
 	return true;
 };
+
+
+export const GetAllTags = async (): Promise<boolean> => {
+	console.log(`${Route.GetAllTags} called`)
+	let response: Response;
+
+	try {
+		response = await fetch(`http://${domain}:4000/${Route.GetAllTags}`,{
+			method: Methods.GET,
+		});
+	} catch(e){
+		throw new Error(ErrorMessage.TimeOut);
+	}
+	console.log(`getalltags response= ${response}`);
+ //TODO: check error codes in backend
+	if ([500, 502].includes(response.status)) {
+		throw new Error(ErrorMessage.ServerError);
+	}
+	if (response.status != 200) {
+		throw new Error(ErrorMessage.UnhandledError);
+	}
+	const raw = await response.json();
+
+	console.log(raw);
+
+	return true;
+}
+
+export const GetAllUsers = async (): Promise<boolean> => {
+	console.log(`${Route.GetAllUsers} called`)
+	let response: Response;
+
+	try {
+		response = await fetch(`http://${domain}:4000/${Route.GetAllUsers}`,{
+			method: Methods.GET,
+		});
+	} catch(e){
+		throw new Error(ErrorMessage.TimeOut);
+	}
+	console.log(`getallusers response= ${response}`);
+ //TODO: check error codes in backend
+	if ([500, 502].includes(response.status)) {
+		throw new Error(ErrorMessage.ServerError);
+	}
+	if (response.status != 200) {
+		throw new Error(ErrorMessage.UnhandledError);
+	}
+	const raw = await response.json();
+
+	console.log(raw);
+
+	return true;
+}
+
+export const GetUserProfile = async (): Promise<boolean> => {
+	console.log(`${Route.GetAllUsers} called`)
+	let response: Response;
+	return true;
+}
+
