@@ -7,7 +7,7 @@ import { tagLogo } from "@/global/helpers";
 import { Button, FormControl, useToast } from "@chakra-ui/react";
 import { OptionBase, Select, GroupBase } from "chakra-react-select";
 import { buildInput } from "./(components)/Input";
-import { buildResultWrapper } from "./(components)/resultWrapper";
+import { ResultWrapper } from "./(components)/resultWrapper";
 import { buildOptions } from "./helpers";
 import { FaSignOutAlt } from "react-icons/fa";
 import { SignOutFromApp } from "@/controllers/Firebase";
@@ -24,38 +24,16 @@ function Index() {
 	const [nameFilteredUsers, setNameFilteredUsers] = useState(
 		userDB as User[]
 	);
-	const [singOutLoading, setSingOutLoading] = useState(false);
 	const [tagFilteredUsers, setTagFilteredUsers] = useState(userDB as User[]);
 	const [displayUsers, setDisplayUsers] = useState(userDB as User[]);
+	const [singOutLoading, setSingOutLoading] = useState(false);
 	const [query, setQuery] = useState("");
 
 	useEffect(() => setDomLoaded(true), []);
 
-	const getNameFilterdList = (searchQuery: string): User[] => {
-		return userDB.filter(
-			(user) =>
-				user.firstName.toLowerCase().includes(searchQuery) ||
-				user.lastName.toLowerCase().includes(searchQuery) ||
-				user.email.toLowerCase().includes(searchQuery)
-		);
-	};
-	const handleSearch = (q: any) => {
-		const { value } = q.target;
-		const re = /^[a-zA-Z][a-zA-Z ]*$/;
-		if (value != "" && !re.test(value)) {
-			return;
-		}
-		setLoading(true);
-		setQuery(value);
-		const searchQuery = q.target.value.toLowerCase();
-		setTimeout(() => {
-			setNameFilteredUsers(getNameFilterdList(searchQuery));
-		}, 2000);
-	};
-
-	useEffect(() => {
-		setLoading(false);
-	}, [displayUsers]);
+	// useEffect(() => {
+	// 	setLoading(false);
+	// }, [displayUsers]);
 
 	useEffect(() => {
 		setLoading(true);
@@ -66,7 +44,7 @@ function Index() {
 			userDB.filter((x: User) => {
 				const userTagList = x.tags.map((e) => e.label);
 				return selectedTagCheckList.every((elem) =>
-					userTagList.includes(elem) 
+					userTagList.includes(elem)
 				);
 			});
 		setTimeout(() => {
@@ -80,10 +58,36 @@ function Index() {
 		);
 	}, [nameFilteredUsers, tagFilteredUsers]);
 
+	const getNameFilterdList = (searchQuery: string): User[] => {
+		return userDB.filter(
+			(user) =>
+				user.firstName.toLowerCase().includes(searchQuery) ||
+				user.lastName.toLowerCase().includes(searchQuery) ||
+				user.email.toLowerCase().includes(searchQuery)
+		);
+	};
+
+	const handleSearch = (q: any) => {
+		const { value } = q.target;
+		const re = /^[a-zA-Z][a-zA-Z ]*$/;
+		if (value != "" && !re.test(value)) {
+			return;
+		}
+		setLoading(true);
+		setQuery(value);
+		const searchQuery = q.target.value.toLowerCase();
+		setTimeout(() => {
+			setNameFilteredUsers(getNameFilterdList(searchQuery));
+			setLoading(false);
+		}, 2000);
+	};
+
 	const handleTagSelection = (e: any) => {
 		setSelectedTags(e);
 	};
+
 	const toast = useToast();
+
 	async function handleSignOut() {
 		setSingOutLoading(true);
 		try {
@@ -98,6 +102,7 @@ function Index() {
 		}
 		setSingOutLoading(true);
 	}
+
 	return (
 		<div className={"bg-gray-800 w-screen h-screen flex-col "}>
 			<div className="flex justify-end flex-row pt-5 pr-16">
@@ -144,7 +149,7 @@ function Index() {
 								>
 									isMulti
 									hasStickyGroupHeaders
-									name="colors"
+									name="tags"
 									options={buildOptions()}
 									onChange={handleTagSelection}
 									placeholder="Select some tags..."
@@ -154,7 +159,12 @@ function Index() {
 							</FormControl>
 						)}
 					</div>
-					{isDomLoaded && buildResultWrapper(isLoading, displayUsers)}
+					{
+						<ResultWrapper
+							isLoading={isLoading}
+							filteredUsers={displayUsers}
+						/>
+					}
 				</div>
 			</div>
 		</div>
