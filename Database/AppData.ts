@@ -38,6 +38,9 @@ export class Database {
 			_user.tags = obj.tags?.map((_tagID: string) => {
 				const _tag = Database.allTags.get(_tagID);
 				if (_tag == null) {
+					// console.log(_user.);
+					console.log(Database.allTags);
+					console.log(_tagID);
 					throw new Error(ErrorMessage.ParsingError);
 				}
 				return _tag!;

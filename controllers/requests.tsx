@@ -10,7 +10,7 @@ import { Utils } from "@/global/helpers";
 import { saveToLocalStorage } from "./LocalStorage";
 import { Database } from "@/Database/AppData";
 
-const domain = Domains.Aryan;
+const domain = Domains.Kunal;
 
 export const Authenticate = async (
 	email: string
@@ -100,7 +100,6 @@ export const GetAllTags = async (): Promise<Map<string, Tag>> => {
 	} catch (e) {
 		throw new Error(ErrorMessage.TimeOut);
 	}
-	console.log(`getalltags response= ${response}`);
 	//TODO: check error codes in backend
 	if ([500, 502].includes(response.status)) {
 		throw new Error(ErrorMessage.ServerError);
@@ -109,6 +108,7 @@ export const GetAllTags = async (): Promise<Map<string, Tag>> => {
 		throw new Error(ErrorMessage.UnhandledError);
 	}
 	const raw = await response.json();
+	console.log(`getalltags response=`, raw);
 
 	Database.populateAllTags(raw.object);
 
@@ -135,7 +135,12 @@ export const GetAllUsers = async (): Promise<Map<string, User>> => {
 	}
 	const raw = await response.json();
 
-	Database.populateAllUsers(raw.object);
+	try {
+		Database.populateAllUsers(raw.object);
+	} catch (e) {
+		console.error(e);
+		throw e;
+	}
 
 	return Database.allUsers;
 };
