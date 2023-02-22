@@ -20,13 +20,7 @@ export class User {
 		dob,
 		closeFriends,
 		friends,
-		tags = [
-			new Tag({
-				title: "BITS-G",
-				type: TagType.Formal,
-				id: "",
-			}),
-		],
+		tags = [],
 		email,
 	}: UserParams) {
 		this.id = id;
@@ -89,7 +83,7 @@ export class Tag {
 	}
 }
 
-interface TagParams {
+export interface TagParams {
 	id: string;
 	title: string;
 	type: TagType;

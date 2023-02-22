@@ -10,7 +10,7 @@ import { Utils } from "@/global/helpers";
 import { saveToLocalStorage } from "./LocalStorage";
 import { Database } from "@/Database/AppData";
 
-const domain = Domains.Kunal;
+const domain = Domains.Aryan;
 
 export const Authenticate = async (
 	email: string

@@ -1,4 +1,4 @@
-import {Inter} from "@next/font/google";
+import { Inter } from "@next/font/google";
 
 export enum Domains {
     Localhost = "localhost",
@@ -31,20 +31,21 @@ export enum ErrorMessage {
     SomethingWentWrong = "Something went wrong, please try again!",
 }
 
-export const kFontNormal = Inter({subsets: ["latin"], weight: "400"});
-export const kFontMedium = Inter({subsets: ["latin"], weight: "500"});
-export const kFontSemiBold = Inter({subsets: ["latin"], weight: "600"});
-export const kFontBold = Inter({subsets: ["latin"], weight: "700"});
-export const kFontExtraBold = Inter({subsets: ["latin"], weight: "900"});
+export const kFontNormal = Inter({ subsets: ["latin"], weight: "400" });
+export const kFontMedium = Inter({ subsets: ["latin"], weight: "500" });
+export const kFontSemiBold = Inter({ subsets: ["latin"], weight: "600" });
+export const kFontBold = Inter({ subsets: ["latin"], weight: "700" });
+export const kFontExtraBold = Inter({ subsets: ["latin"], weight: "900" });
 
 export const kColorBlue600 = "#2B6CB0";
 export const kColorGray700 = "#2D3748";
+export const kColorGray600 = "#4A5568";
 
 export const heroTitle: string =
     "Connecting you to the world, one link at a time.";
 export const heroSubTitle: string = "Discover resourceful connections";
 
-import {extendTheme} from "@chakra-ui/react";
+import { extendTheme } from "@chakra-ui/react";
 
 export const theme = extendTheme({
     colors: {
@@ -58,5 +59,5 @@ export const theme = extendTheme({
 
 export enum StorageKeys {
     IsLoggedIn = "isLoggedIn",
-    Hero = "",
+    Hero = "Hero",
 }

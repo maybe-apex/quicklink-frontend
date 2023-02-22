@@ -1,14 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { ErrorMessage } from "@/global/constants";
-import { User } from "@/models/user";
+import { TagParams, User } from "@/models/user";
 import Image from "next/image";
 import { tagLogo } from "@/global/helpers";
 import { Button, FormControl, useToast } from "@chakra-ui/react";
 import { OptionBase, Select, GroupBase } from "chakra-react-select";
 import { CustomInput } from "./(components)/Input";
 import { ResultWrapper } from "./(components)/resultWrapper";
-import { buildOptions } from "./helpers";
+import { buildOptionsUsers } from "./helpers";
 import { FaSignOutAlt } from "react-icons/fa";
 import { SignOutFromApp } from "@/controllers/Firebase";
 import { useRouter } from "next/navigation";
@@ -102,89 +102,90 @@ function Index() {
 
 	const handleTagSelection = (e: any) => {
 		setSelectedTags(e);
-	};
+		
+};
 
-	const toast = useToast();
+const toast = useToast();
 
-	async function handleSignOut() {
-		setSingOutLoading(true);
-		try {
-			await SignOutFromApp();
-			router.push("./landing");
-		} catch (e) {
-			toast({
-				title: `${ErrorMessage.SomethingWentWrong}`,
-				status: "error",
-				isClosable: true,
-			});
-		}
-		setSingOutLoading(true);
+async function handleSignOut() {
+	setSingOutLoading(true);
+	try {
+		await SignOutFromApp();
+		router.push("./landing");
+	} catch (e) {
+		toast({
+			title: `${ErrorMessage.SomethingWentWrong}`,
+			status: "error",
+			isClosable: true,
+		});
 	}
+	setSingOutLoading(true);
+}
 
-	return (
-		<div className={"bg-gray-800 w-screen h-screen flex-col "}>
-			<div className="flex justify-end flex-row pt-5 pr-16">
-				{singOutLoading && (
-					<Button
-						isLoading
-						loadingText="Signing Out"
-						leftIcon={<FaSignOutAlt />}
-						colorScheme="red"
-						variant="solid"
-						onClick={handleSignOut}
-					>
-						Sign Out
-					</Button>
-				)}
-				{!singOutLoading && (
-					<Button
-						leftIcon={<FaSignOutAlt />}
-						colorScheme="red"
-						variant="solid"
-						onClick={handleSignOut}
-					>
-						Sign Out
-					</Button>
-				)}
-			</div>
-			<div className="flex w-screen h-fit justify-center">
-				<div className={"mt-28 flex flex-col w-[650px] md:w-[775px]"}>
-					<CustomInput query={query} handleSearch={handleSearch} />
-					<div className="flex flex-row">
-						<div className="bg-gray-800 my-5 px-4 py-2">
-							<Image
-								src={tagLogo}
-								alt="quicklink"
-								className={"h-fit w-5 bg-gray-800"}
-							/>
-						</div>
-						{isDomLoaded && (
-							<FormControl my={4}>
-								<Select<
-									ColorOption,
-									true,
-									GroupBase<ColorOption>
-								>
-									isMulti
-									hasStickyGroupHeaders
-									name="tags"
-									options={buildOptions()}
-									onChange={handleTagSelection}
-									placeholder="Select some tags..."
-									closeMenuOnSelect={false}
-									variant="filled"
-								/>
-							</FormControl>
-						)}
+return (
+	<div className={"bg-gray-800 w-screen h-screen flex-col "}>
+		<div className="flex justify-end flex-row pt-5 pr-16">
+			{singOutLoading && (
+				<Button
+					isLoading
+					loadingText="Signing Out"
+					leftIcon={<FaSignOutAlt />}
+					colorScheme="red"
+					variant="solid"
+					onClick={handleSignOut}
+				>
+					Sign Out
+				</Button>
+			)}
+			{!singOutLoading && (
+				<Button
+					leftIcon={<FaSignOutAlt />}
+					colorScheme="red"
+					variant="solid"
+					onClick={handleSignOut}
+				>
+					Sign Out
+				</Button>
+			)}
+		</div>
+		<div className="flex w-screen h-fit justify-center">
+			<div className={"mt-28 flex flex-col w-[650px] md:w-[775px]"}>
+				<CustomInput query={query} handleSearch={handleSearch} />
+				<div className="flex flex-row">
+					<div className="bg-gray-800 my-5 px-4 py-2">
+						<Image
+							src={tagLogo}
+							alt="quicklink"
+							className={"h-fit w-5 bg-gray-800"}
+						/>
 					</div>
-					<ResultWrapper
-						isLoading={isLoading}
-						filteredUsers={displayUsers}
-					/>
+					{isDomLoaded && (
+						<FormControl my={4}>
+							<Select<
+								ColorOption,
+								true,
+								GroupBase<ColorOption>
+							>
+								isMulti
+								hasStickyGroupHeaders
+								name="tags"
+								options={buildOptionsUsers()}
+								onChange={handleTagSelection}
+								placeholder="Select some tags..."
+								closeMenuOnSelect={false}
+								variant="filled"
+							/>
+						</FormControl>
+					)}
 				</div>
+				<ResultWrapper
+					isLoading={isLoading}
+					filteredUsers={displayUsers}
+				/>
 			</div>
 		</div>
-	);
+	</div>
+);
 }
 
 export default Index;

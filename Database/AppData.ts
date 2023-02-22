@@ -29,7 +29,6 @@ export class Database {
 			);
 		});
 	}
-
 	static populateAllUsers(userList: Record<string, any>[]) {
 		console.log("populateAllUsers called");
 		Database.allUsers.clear();

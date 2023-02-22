@@ -2,9 +2,9 @@
 import { SignOutFromApp } from "@/controllers/Firebase";
 import { GetAllTags } from "@/controllers/requests";
 import { Database } from "@/Database/AppData";
-import { ErrorMessage, kFontBold } from "@/global/constants";
+import { ErrorMessage, kColorGray600, kFontBold, StorageKeys } from "@/global/constants";
 import { searchLogo, tagLogo } from "@/global/helpers";
-import { TagType } from "@/models/user";
+import { TagParams, TagType } from "@/models/user";
 import Image from "next/image";
 import {
 	Button,
@@ -21,7 +21,8 @@ import { useState, useEffect } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { CustomInput } from "../addFriends/(components)/Input";
 import { GroupBase, OptionBase, Select } from "chakra-react-select";
-import { buildOptions } from "../addFriends/helpers";
+import { buildOptionsTags, buildOptionsUsers } from "../addFriends/helpers";
+import { loadFromLocalStorage } from "@/controllers/LocalStorage";
 interface ColorOption extends OptionBase {
 	value: string;
 	label: string;
@@ -34,6 +35,9 @@ export default function Index() {
 	const [isLoading, setLoading] = useState(false);
 	const toast = useToast();
 	const [query, setQuery] = useState("");
+	const [tempTags, setTempTags] = useState(new Set() as Set<string>);
+	const [selectedTags, setSelectedTags] = useState(new Set() as Set<string>);
+
 
 	useEffect(() => {
 		(async () => {
@@ -64,6 +68,25 @@ export default function Index() {
 		}
 		setSingOutLoading(true);
 	}
+	const fn = (e: any[]) => {
+		const current = new Set(tempTags)
+		e.forEach(element => {
+			current.add(element?.id);
+		})
+		setTempTags(current)
+	}
+	const handleTagSelection = (e: any) => {
+		console.log("buildoptions", e)
+		const newSet = new Set() as Set<string>;
+		e.forEach((element: any) => {
+			newSet.add(element?.id)
+		});
+		setSelectedTags(newSet);
+		fn(e)
+		// selectedTags.forEach(element => {
+		// 	handleTempTagClicks(Database.allTags.get(element?.id)!)
+		// })
+	};
 	const handleSearch = (q: any) => {
 		const { value } = q.target;
 		const re = /^[a-zA-Z][a-zA-Z ]*$/;
@@ -76,7 +99,36 @@ export default function Index() {
 		// setNameFilteredUsers(getNameFilterdList(searchQuery));
 		setLoading(false);
 	};
+	const handleTempTagClicks = (e: TagParams) => {
+		console.log("fff", e);
+		setTempTags((prev) => {
+			const newSet = new Set(prev)
+			newSet.add(e?.id)
+			return newSet
+		})
+	}
+	const handleTagRemove = (e: string) => {
+		setBool((prev) => { return !prev })
+		setTempTags((prev) => {
+			const newSet = new Set(prev)
+			newSet.delete(e)
+			return newSet
+		})
+		setSelectedTags((prev) => {
+			const newSet = new Set(prev)
+			newSet.delete(e)
+			return newSet
+		})
+	}
+	const [bool, setBool] = useState(true);
+	console.log("first")
+	useEffect(() => {
+		console.log("tagdb", selectedTags)
+	}, [selectedTags])
+
 	let temp = Array.from(Database.allTags.values());
+	const userTagSet = new Set(loadFromLocalStorage(StorageKeys.Hero).tags)
+	console.log("userTagset", userTagSet)
 	return (
 		<div className={"bg-gray-800 w-screen h-screen flex-col"}>
 			<div className="flex justify-end flex-row pt-5 pr-16 mb-10">
@@ -130,10 +182,12 @@ export default function Index() {
 													size={"lg"}
 													key={"lg"}
 													colorScheme={
-														e.type == TagType.Formal
+														userTagSet.has(e.id) || tempTags.has(e.id) ? (e.type == TagType.Formal
 															? "green"
-															: "red"
+															: "red")
+															: "facebook"
 													}
+													onClick={() => handleTempTagClicks(e)}
 												>
 													<TagLabel>
 														{e.title}
@@ -167,9 +221,9 @@ export default function Index() {
 									>
 										isMulti
 										hasStickyGroupHeaders
-										name="tags"
-										options={buildOptions()}
-										// onChange={handleTagSelection}
+										name={bool ? "tags" : "tags"}
+										options={buildOptionsTags()}
+										onChange={handleTagSelection}
 										placeholder="Select some tags..."
 										closeMenuOnSelect={false}
 										variant="filled"
@@ -182,13 +236,14 @@ export default function Index() {
 				<div>
 					<div className="bg-gray-700 p-6 min-h-[150px] max-w-xl mt-6 lg:ml-6 lg:mt-0 rounded-md grid grid-cols-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 grid-flow-row-dense place-items-center gap-y-5">
 						{isDomLoaded &&
-							[...temp].map((e, i) => {
+							Array.from(tempTags).map((e, i) => {
+								let current = Database.allTags.get(e)!
 								return (
-									<WrapItem key={`${i} ${e.title}`}>
+									<WrapItem key={`${i} ${current.title}`}>
 										<Tooltip
 											placement="top"
 											label={
-												e.type == TagType.Formal
+												current.type == TagType.Formal
 													? "formal"
 													: "informal"
 											}
@@ -197,13 +252,13 @@ export default function Index() {
 												size={"lg"}
 												key={"lg"}
 												colorScheme={
-													e.type == TagType.Formal
+													current.type == TagType.Formal
 														? "green"
 														: "red"
 												}
 											>
-												<TagLabel>{e.title}</TagLabel>
-												<TagCloseButton />
+												<TagLabel>{current.title}</TagLabel>
+												<TagCloseButton onClick={() => handleTagRemove(e)} />
 											</Tag>
 										</Tooltip>
 									</WrapItem>
@@ -212,6 +267,6 @@ export default function Index() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</div >
 	);
 }
